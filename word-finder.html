@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+
+<!--
+  COLLABORATORS:
+  
+-->
+
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>Word Finder</title>
+
+<!-- Load any supplemental Javascript libraries here -->
+<script type="text/javascript" src="jquery-1.5.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script type="text/javascript" src="words-small.json"></script>
+
+<!-- Uncomment this to get the full 45,407 word dictionary
+<script type="text/javascript" src="words-large.json"></script>
+ -->
+
+<script type="text/javascript" src="dictionary.js"></script>
+
+<script type="text/javascript">
+// <![CDATA[
+
+// This allows the Javascript code inside this block to only run when the page
+// has finished loading in the browser.
+$(document).ready(function() {
+	console.log("Ready");
+	var dict = new Dictionary(words);
+	// Your code here
+	var dictSize = dict.size();
+	var wordsbox = document.getElementById("words");
+	var numwordsLbl = document.getElementById("numwords");
+	
+	function Add(word) {
+		var option = document.createElement("option");
+		option.text = word;
+		wordsbox.options.add(option);
+	}
+	$("#search").on("keyup", function(event){
+		var keyCode = event.keyCode == 0 ? event.charCode : event.keyCode;
+		var searchBox = document.getElementById("search");
+		console.log(event.which);
+		if((event.keyCode >=65 && event.keyCode <= 90) || (event.keycode == 46 || event.keycode == 8) || event.keycode == undefined){
+
+			console.log("Searching");
+			while (wordsbox.options.length){
+				wordsbox.remove(0);
+			}
+			var query = $("#search").val();
+			var results = dict.search(query);
+			var resSize = results.length;
+			results.forEach(Add);
+			if (query == ""){
+				numwordsLbl.innerHTML = dictSize + " words total";
+			} else {
+				numwordsLbl.innerHTML = resSize + " words containing '" + query + "'";
+			}
+		}
+	});
+	
+	$("#clear").on("click", function(){
+		$("#search").trigger("keyup");
+	});
+	$("#search").trigger("keyup");
+});
+
+
+// ]]>
+</script>
+
+<style type="text/css">
+
+/* Your CSS here */
+html {
+    background-color: #eee;
+}
+
+</style>
+
+</head>
+<body style = "margin: 25px; height:inherit;">
+	<form style = "height:inherit;">
+		<label for = "search">Find: </label>
+		<input type = "text" id = "search" name = "search" value = "" autocomplete = "off" autofocus>
+		<input type = "button" id = "clear" name = "clear" value = "Clear" style = "margin-left: 10px;" onclick="document.getElementById('search').value = ''"><br>
+		<div style = "margin-left:39px;margin-top:10px;">
+			<label name="numwords" id="numwords" for="words">850 words total</label><br>
+			<select name = "words" id = "words" size="10" style = "width:180px; margin-top:10px; position:absolute; bottom:20px; top:73px; min-height:100px"></select>
+		</div>
+	</form>
+
+</body>
+</html>
